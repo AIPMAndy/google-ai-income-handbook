@@ -1,0 +1,35 @@
+name: Validate handbook
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate structured content and safe publishing
+        run: python -m unittest discover -s tests -v
+      - name: JavaScript syntax check
+        run: node --check assets/app.js && node --check assets/data.js
+      - name: Verify standalone site links and artifacts
+        run: |
+          python - <<'PYTEST'
+          from pathlib import Path
+          import json
+          root=Path('.')
+          data=json.loads((root/'content.json').read_text())
+          assert data['meta']['url']=='https://aipmandy.github.io/google-ai-income-handbook/'
+          assert data['meta']['github']=='https://github.com/AIPMAndy/google-ai-income-handbook'
+          assert (root/'index.html').exists()
+          assert (root/'pdf/google-ai-income-handbook.pdf').read_bytes()[:5]==b'%PDF-'
+          assert 'one-person-ai-income-guide/google-ai-income' not in (root/'index.html').read_text()
+          PYTEST
