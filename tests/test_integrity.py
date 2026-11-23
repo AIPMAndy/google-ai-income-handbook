@@ -21,6 +21,17 @@ class TestGuide(unittest.TestCase):
   alltext='\n'.join((ROOT/x).read_text(encoding='utf-8') for x in ['index.html','README.md','print.html'])
   for marker in ['AIPMAndy','metaver.vip','www.a6no1.cn','pdf/google-ai-income-handbook.pdf']:
    self.assertIn(marker,alltext)
+ def test_contact_is_visible_and_clickable(self):
+  page=(ROOT/'index.html').read_text(encoding='utf-8')
+  printed=(ROOT/'print.html').read_text(encoding='utf-8')
+  for s in [page,printed]:
+   self.assertIn('href="https://metaver.vip/"',s)
+   self.assertIn('AIPMAndy',s)
+  self.assertGreaterEqual(page.count('href="https://metaver.vip/"'),4)
+  self.assertIn('hero-contact',page)
+  self.assertIn('author-bridge',page)
+  self.assertGreaterEqual(page.count('copy-wx'),4)
+  self.assertIn('LinkP(', (ROOT/'make_pdf.py').read_text(encoding='utf-8'))
  def test_no_keys(self):
   for p in ROOT.rglob('*'):
    if p.suffix in {'.html','.js','.json','.md'}:

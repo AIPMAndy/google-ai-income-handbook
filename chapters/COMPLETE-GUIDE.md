@@ -2,6 +2,8 @@
 
 > 2026-11-23 修订｜AI 酋长 Andy / 星觉科技｜微信 AIPMAndy｜教程免费｜非 Google 官方
 
+个人官网：https://metaver.vip/ ｜ 服务与陪跑：https://metaver.vip/services ｜ 微信：AIPMAndy（复制后在微信搜索）
+
 核心路径：找到真实买家 → 验证痛点 → 48h 样稿 → 报价/小额试单 → 人工审查/交付验收 → 真实现金流/复购。**30 天不承诺收入**。
 
 ## 00 这不是 Google 给你发工资

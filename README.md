@@ -12,6 +12,8 @@
 **企业官网：** https://www.a6no1.cn/  
 **咨询与陪跑：** https://metaver.vip/services
 
+**快速联系作者：** 点击 [个人官网 metaver.vip](https://metaver.vip/) 了解 Andy；微信搜索 `AIPMAndy`（备注「Google AI 赚钱」）。网站首页和正文提供「复制微信」按钮。教程、PDF、模板均可免费阅读，不要求先添加微信。
+
 ## 先看路线
 
 | 方向 | 买家 | 最小可验收交付 |

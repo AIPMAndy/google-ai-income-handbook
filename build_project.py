@@ -103,7 +103,7 @@ for day in range(1,31):
 DATA={'meta':{'title':'Google AI 赚钱保姆级实战攻略','subtitle':'从 0 到可验收交付｜8 条路径 · 22 章 · 16 套 Prompt · 30 天计划','updated':'2026-11-23','author':'AI 酋长 Andy / 星觉科技','wechat':'AIPMAndy','personal':'https://metaver.vip/','company':'https://www.a6no1.cn/','service':'https://metaver.vip/services','github':'https://github.com/AIPMAndy/google-ai-income-handbook','url':PAGES_URL},'routes':ROUTES,'chapters':CHAPTERS,'prompts':[{'id':i+1,'category':p[0],'title':p[1],'body':p[2]} for i,p in enumerate(PROMPTS)],'plan':PLAN,'sources':SOURCES}
 (ROOT/'assets/data.js').write_text('window.GOOGLE_AI_HANDBOOK = '+json.dumps(DATA,ensure_ascii=False,separators=(',',':'))+';\n',encoding='utf-8')
 (ROOT/'content.json').write_text(json.dumps(DATA,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-md=['# Google AI 赚钱保姆级实战攻略','', '> 2026-11-23 修订｜AI 酋长 Andy / 星觉科技｜微信 AIPMAndy｜教程免费｜非 Google 官方','', '核心路径：找到真实买家 → 验证痛点 → 48h 样稿 → 报价/小额试单 → 人工审查/交付验收 → 真实现金流/复购。**30 天不承诺收入**。','']
+md=['# Google AI 赚钱保姆级实战攻略','', '> 2026-11-23 修订｜AI 酋长 Andy / 星觉科技｜微信 AIPMAndy｜教程免费｜非 Google 官方','', '个人官网：https://metaver.vip/ ｜ 服务与陪跑：https://metaver.vip/services ｜ 微信：AIPMAndy（复制后在微信搜索）','', '核心路径：找到真实买家 → 验证痛点 → 48h 样稿 → 报价/小额试单 → 人工审查/交付验收 → 真实现金流/复购。**30 天不承诺收入**。','']
 for chp in CHAPTERS:
  md.extend([f"## {chp['id']} {chp['title']}","",chp['lead'],"",f"**工具：** {chp['tools'] or '已有可用工具即可'}","",'**照着做**'])
  for i,s in enumerate(chp['steps'],1):md.append(f'{i}. {s}')
@@ -112,13 +112,13 @@ for chp in CHAPTERS:
  if chp['check']:md.append(f"**验收：** {chp['check']}")
  md.append('')
 (ROOT/'chapters/COMPLETE-GUIDE.md').write_text('\n'.join(md),encoding='utf-8')
-prompts_md=['# Google AI 赚钱 · 16 套可复制任务 Prompt','','将花括号替换为你有权使用的信息；涉及真实客户数据前先取得授权。']
+prompts_md=['# Google AI 赚钱 · 16 套可复制任务 Prompt','','将花括号替换为你有权使用的信息；涉及真实客户数据前先取得授权。','', '**作者：AI 酋长 Andy｜微信：AIPMAndy｜个人官网：https://metaver.vip/**']
 for p in DATA['prompts']:prompts_md.extend(['',f"## {p['id']:02d}｜{p['category']} · {p['title']}",'', '```text',p['body'],'```'])
 (ROOT/'chapters/PROMPTS.md').write_text('\n'.join(prompts_md)+'\n',encoding='utf-8')
 sources_md=['# 官方来源核查台账','', '> 截至 2026-11-23。官方页面可能更新。特别注意产品地区开放与定价实时变动。','']
 for i,s in enumerate(SOURCES,1):sources_md.extend([f"{i}. **{s['title']}**：[官方原文]({s['url']})",f"   - 核查口径：{s['note']}"])
 (ROOT/'chapters/SOURCES.md').write_text('\n'.join(sources_md)+'\n',encoding='utf-8')
-plan_md=['# 30 天实战计划','', '> 实验，不保证成交与收入。每天请保留可以复核的证据。','']
+plan_md=['# 30 天实战计划','', '> 实验，不保证成交与收入。每天请保留可以复核的证据。','','**作者：AI 酋长 Andy｜微信：AIPMAndy｜个人官网：https://metaver.vip/**','']
 for v in PLAN:plan_md.append(f"- [ ] Day {v['day']:02d}｜{v['phase']}｜{v['action']}｜证据：{v['proof']}")
 (ROOT/'chapters/30-DAY-PLAN.md').write_text('\n'.join(plan_md)+'\n',encoding='utf-8')
 ROOT.joinpath('templates/BUYER-DISCOVERY.md').write_text('''# 需求访谈表\n\n> 不填入未经授权的个人隐私。\n\n- 买家角色（非姓名）：\n- 最近一次真实任务发生时间：\n- 目前谁执行、频率与耗时：\n- 当前替代方式：\n- 为什么现在有变化：\n- 决策者 / 预算路径：\n- 对方明确说过的原话：\n- 我的推断（另列）：\n- 是否愿意看样稿：是/否/不确定\n- 下一步合法沟通方式：\n''',encoding='utf-8')

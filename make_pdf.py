@@ -40,6 +40,11 @@ def normalize(text):
 def P(text,kind='body'):
  return Paragraph(html.escape(normalize(text)).replace('\n','<br/>'),styles[kind])
 
+def LinkP(label,url,kind='body'):
+ """A real PDF hyperlink; separate from the unlinked WeChat ID."""
+ safe=html.escape(url,quote=True)
+ return Paragraph(html.escape(label)+'：<link href="'+safe+'" color="#247a4a"><u>'+html.escape(url)+'</u></link>',styles[kind])
+
 def box(label,text,bg):
  t=Table([[Paragraph('<b>'+html.escape(normalize(label))+'</b><br/>'+html.escape(normalize(text)).replace('\n','<br/>'),styles['box'])]],colWidths=[W-2*MARGIN_X-14],hAlign='LEFT')
  t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),bg),('BOX',(0,0),(-1,-1),.4,C['line']),('LEFTPADDING',(0,0),(-1,-1),12),('RIGHTPADDING',(0,0),(-1,-1),12),('TOPPADDING',(0,0),(-1,-1),10),('BOTTOMPADDING',(0,0),(-1,-1),11)]))
@@ -56,7 +61,13 @@ class HandbookDoc(BaseDocTemplate):
    canv.setStrokeColor(C['line']);canv.line(MARGIN_X,H-13*mm,W-MARGIN_X,H-13*mm)
    canv.setFillColor(C['sub']);canv.drawString(MARGIN_X,H-10.5*mm,'GOOGLE AI INCOME HANDBOOK / FREE EDITION')
   canv.setStrokeColor(C['line']);canv.line(MARGIN_X,14*mm,W-MARGIN_X,14*mm)
-  canv.setFillColor(C['sub']);canv.drawString(MARGIN_X,9*mm,'AI 酋长 Andy / 微信 AIPMAndy / metaver.vip / a6no1.cn')
+  canv.setFillColor(C['sub']);footer='AI 酋长 Andy / 微信 AIPMAndy / '
+  canv.drawString(MARGIN_X,9*mm,footer)
+  x=MARGIN_X+pdfmetrics.stringWidth(footer,FONT,8.5)
+  canv.setFillColor(colors.HexColor('#247a4a'));canv.drawString(x,9*mm,'metaver.vip')
+  end=x+pdfmetrics.stringWidth('metaver.vip',FONT,8.5)
+  canv.linkURL('https://metaver.vip/',(x,7*mm,end,13*mm),relative=0,thickness=0)
+  canv.setFillColor(C['sub']);canv.drawString(end,9*mm,' / a6no1.cn')
   canv.drawRightString(W-MARGIN_X,9*mm,str(doc.page));canv.restoreState()
  def afterFlowable(self,flowable):
   if isinstance(flowable,Paragraph) and flowable.style.name=='ChTitle':
@@ -68,7 +79,7 @@ def build():
  d=json.loads((ROOT/'content.json').read_text(encoding='utf-8'))
  path=ROOT/'pdf/google-ai-income-handbook.pdf'
  story=[]
- story += [Spacer(1,48*mm),P('AI CHIEF ANDY  /  FREE · OPEN SOURCE  /  2026.11','coverTop'),P('Google AI 赚钱\n保姆级实战攻略','cover'),P('从真实需求到可验收交付\n8 条业务路线 · 22 章 · 16 套 Prompt · 30 天计划','subtitle'),Spacer(1,13*mm),HRFlowable(width='90%',thickness=4,color=C['mint']),Spacer(1,14*mm),P('AI 酋长 Andy / 星觉科技','subhead'),P('微信：AIPMAndy ｜ 个人官网：https://metaver.vip/','body'),P('公司官网：https://www.a6no1.cn/ ｜ 教程免费开放','body'),P('网站：https://aipmandy.github.io/google-ai-income-handbook/','foot'),Spacer(1,20*mm),P('本书不是 Google 官方材料，不包含任何收入保证。所有金额属于读者自行输入的经营假设；商业收入仅以实际到账、真实交付与成本核算为准。官方产品、价格、额度和适用规则请在使用前核验。','foot'),PageBreak()]
+ story += [Spacer(1,48*mm),P('AI CHIEF ANDY  /  FREE · OPEN SOURCE  /  2026.11','coverTop'),P('Google AI 赚钱\n保姆级实战攻略','cover'),P('从真实需求到可验收交付\n8 条业务路线 · 22 章 · 16 套 Prompt · 30 天计划','subtitle'),Spacer(1,13*mm),HRFlowable(width='90%',thickness=4,color=C['mint']),Spacer(1,14*mm),P('AI 酋长 Andy / 星觉科技','subhead'),P('微信：AIPMAndy（添加备注：Google AI 赚钱）','body'),LinkP('个人官网','https://metaver.vip/'),LinkP('服务与陪跑','https://metaver.vip/services','foot'),LinkP('公司官网','https://www.a6no1.cn/','foot'),LinkP('免费教程','https://aipmandy.github.io/google-ai-income-handbook/','foot'),Spacer(1,20*mm),P('本书不是 Google 官方材料，不包含任何收入保证。所有金额属于读者自行输入的经营假设；商业收入仅以实际到账、真实交付与成本核算为准。官方产品、价格、额度和适用规则请在使用前核验。','foot'),PageBreak()]
  story += [P('目录 / CONTENTS','tocHead'),P('先找一个真的愿意付钱的人；再用 AI 把交付成本降下来。','body'),Spacer(1,6*mm)]
  toc=TableOfContents();toc.levelStyles=[styles['toc']];story.append(toc);story.append(PageBreak())
  for c in d['chapters']:
@@ -88,7 +99,7 @@ def build():
  story.append(PageBreak());p=P('附录 C  官方来源与核查台账','section');p._bookmark='appendix_sources';story.append(p)
  for i,x in enumerate(d['sources'],1):
   story += [P(str(i)+'. '+x['title'],'subhead'),P(x['url'],'foot'),P(x['note'],'foot')]
- story.append(PageBreak());story += [Spacer(1,43*mm),P('教程免费。\n需要落地支持，再来找我。','cover'),P('AI 酋长 Andy / 星觉科技','subhead'),P('个人微信：AIPMAndy','body'),P('个人官网：https://metaver.vip/','body'),P('公司官网：https://www.a6no1.cn/','body'),P('服务与陪跑：https://metaver.vip/services','body'),P('教程：https://aipmandy.github.io/google-ai-income-handbook/','foot'),Spacer(1,12*mm),box('再强调一次','本书所有教程、Prompt 和模板均免费使用。添加微信或购买咨询并非阅读前提。部分生成内容需人工核实授权、平台规则和经营利润，不能保证任何人的收入。',C['light'])]
+ story.append(PageBreak());story += [Spacer(1,43*mm),P('教程免费。\n需要落地支持，再来找我。','cover'),P('AI 酋长 Andy / 星觉科技','subhead'),P('个人微信：AIPMAndy（备注：Google AI 赚钱）','body'),LinkP('个人官网','https://metaver.vip/'),LinkP('公司官网','https://www.a6no1.cn/'),LinkP('服务与陪跑','https://metaver.vip/services'),LinkP('免费教程','https://aipmandy.github.io/google-ai-income-handbook/','foot'),Spacer(1,12*mm),box('再强调一次','本书所有教程、Prompt 和模板均免费使用。添加微信或购买咨询并非阅读前提。部分生成内容需人工核实授权、平台规则和经营利润，不能保证任何人的收入。',C['light'])]
  doc=HandbookDoc(path);doc.multiBuild(story)
  print(path,path.stat().st_size)
  return path

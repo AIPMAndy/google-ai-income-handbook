@@ -19,6 +19,10 @@ with sync_playwright() as p:
   assert dims['scroll']<=dims['client']+1,(width,'overflow')
   assert dims['chapterButtons']==22 and dims['routeCards']==8 and dims['promptCards']==16 and dims['dayCards']==30
   assert not errors,errors
+  assert page.locator('.hero-contact .copy-wx').count()==1
+  assert page.locator('.hero-contact a[href="https://metaver.vip/"]').count()==1
+  assert page.locator('.author-bridge a[href="https://metaver.vip/"]').count()==1
+  assert page.locator('.nav-personal[href="https://metaver.vip/"]').count()==1
   page.locator('.chip[data-filter="technical"]').click()
   assert page.locator('.route-card').count()==2
   page.locator('.chip[data-filter="all"]').click()
