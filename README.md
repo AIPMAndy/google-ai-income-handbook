@@ -72,6 +72,13 @@ python3 make_pdf.py
 
 本站作为**独立 GitHub 仓库**从仓库根目录发布。GitHub → Settings → Pages → Deploy from a branch → `main` / `/(root)`；站点无构建依赖。`python3 build_project.py` 可重新生成数据与 Markdown（不会重新生成 HTML 结构），`python3 make_pdf.py` 可生成 PDF。
 
+### Pages 发布检查
+
+- **发布源**：Settings → Pages → Build and deployment → Deploy from a branch → `main` → `/(root)` → Save。
+- **站点首页**：[Google AI 赚钱保姆级攻略](https://aipmandy.github.io/google-ai-income-handbook/)。如仍显示 404，请到 [Actions 运行记录](https://github.com/AIPMAndy/google-ai-income-handbook/actions) 确认是否出现并完成 `pages build and deployment`；`Validate handbook` 成功只说明代码验证通过，不等于网页已经发布。
+- **下载验证**：[PDF 电子书](https://aipmandy.github.io/google-ai-income-handbook/pdf/google-ai-income-handbook.pdf)；网页首屏应显示微信 `AIPMAndy` 和 [个人官网 metaver.vip](https://metaver.vip/)。
+- **如果没有 Pages 部署记录**：先确认设置已保存；分支发布需要有管理员且邮箱已验证的账号提交到发布分支。官方说明：[配置 GitHub Pages 发布源](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)。
+
 ## 关于 2026 最新版 Google 工具
 
 - NotebookLM 于 2026-07-16 正式更名 **Gemini Notebook**。
