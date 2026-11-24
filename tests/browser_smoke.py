@@ -1,9 +1,10 @@
+import os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 URL=(ROOT/'index.html').as_uri()
 with sync_playwright() as p:
- browser=p.chromium.launch(headless=True,args=['--no-sandbox'])
+ browser=p.chromium.launch(headless=True,args=['--no-sandbox'],channel='chrome' if os.getenv('PLAYWRIGHT_USE_SYSTEM_CHROME') else None)
  for width,height in [(390,844),(1280,900)]:
   page=browser.new_page(viewport={'width':width,'height':height},device_scale_factor=1)
   errors=[]
