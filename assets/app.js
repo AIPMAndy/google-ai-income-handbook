@@ -45,15 +45,27 @@ function calc(){
 const calcInputs=$('.calc-fields input');
 calcInputs.forEach(e=>e.addEventListener('input',()=>{calc();$('#calc-mode').textContent='自定义输入 · 请确保每项数字可核验；未知成本留空，不当作 0。'}));
 $('#clear-example').addEventListener('click',()=>{
+  if(userEdited&&!window.confirm('将清空本页已经填写的所有数字。确认吗？清空后可立即撤销。'))return;
+  lastClearedValues=Object.fromEntries(calcInputs.map(el=>[el.id,el.value]));
   calcInputs.forEach(el=>{el.value='';});
-  $('#clear-example').hidden=true;$('#restore-example').hidden=false;
-  $('#calc-mode').textContent='已清空演示值 · 请填写真实数字；未填写不计算。';
-  calc();
-  $('#received').focus({preventScroll:true});
+  $('#clear-example').hidden=true;$('#restore-example').hidden=false;$('#undo-clear').hidden=false;
+  $('#calc-mode').textContent='已清空输入 · 可立即撤销，或填写真实数字；未填写不计算。';
+  userEdited=false;calc();$('#received').focus({preventScroll:true});
+});
+$('#undo-clear').addEventListener('click',()=>{
+  if(!lastClearedValues)return;
+  for(const [id,value] of Object.entries(lastClearedValues))$('#'+id).value=value;
+  lastClearedValues=null;$('#undo-clear').hidden=true;$('#clear-example').hidden=false;$('#restore-example').hidden=true;
+  $('#clear-example').textContent='清空当前输入';
+  $('#calc-mode').textContent='已撤销清空 · 数据恢复到上一步；请继续复核数字。';
+  userEdited=true;calc();$('#received').focus({preventScroll:true});
 });
 $('#restore-example').addEventListener('click',()=>{
+  if(calcInputs.some(el=>el.value.trim())&&!window.confirm('恢复示例会覆盖当前填写的数字，确定继续吗？'))return;
   for(const [id,value] of Object.entries(exampleValues))$('#'+id).value=value;
-  $('#restore-example').hidden=true;$('#clear-example').hidden=false;
+  userEdited=false;lastClearedValues=null;
+  $('#undo-clear').hidden=true;$('#restore-example').hidden=true;$('#clear-example').hidden=false;
+  $('#clear-example').textContent='清空示例，填写真实数据';
   $('#calc-mode').textContent='当前是虚构教学演示值，不是真实订单与经营结果。';
   calc();toast('已恢复虚构教学示例。');
 });

@@ -10,6 +10,8 @@ class CalcUsabilityTest(unittest.TestCase):
     self.assertIn('Number.isSafeInteger(cents)',app)
     self.assertIn('clear-example',app)
     self.assertIn('restore-example',app)
+    self.assertIn('undo-clear',app)
+    self.assertIn('lastClearedValues',app)
     self.assertIn('虚构教学演示值',html)
     self.assertIn('prefers-reduced-motion: reduce',css)
     self.assertIn('aria-live="polite"',html)

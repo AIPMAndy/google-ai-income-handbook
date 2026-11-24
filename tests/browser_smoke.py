@@ -41,12 +41,16 @@ with sync_playwright() as p:
   assert '1,900' in page.locator('#contribution').inner_text()
   page.locator('#tools-cost').fill('1.234')
   assert '请补齐输入' in page.locator('#contribution').inner_text(), 'fraction-of-a-cent must not be rounded invisibly'
-  page.locator('#restore-example').click() if page.locator('#restore-example').is_visible() else page.locator('#clear-example').click()
+  if not page.locator('#restore-example').is_visible():
+   page.once('dialog', lambda dialog: dialog.accept())
+   page.locator('#clear-example').click()
   if page.locator('#restore-example').is_visible(): page.locator('#restore-example').click()
   assert '1,400' in page.locator('#contribution').inner_text()
   page.locator('#clear-example').click()
   assert page.locator('#received').input_value() == ''
   assert '请补齐输入' in page.locator('#contribution').inner_text()
+  page.locator('#undo-clear').click()
+  assert '1,400' in page.locator('#contribution').inner_text(), 'undo restores previous values'
   page.locator('#recommend').click()
   assert '建议先验证：' in page.locator('#recommend-result').inner_text()
   page.locator('[data-day="1"]').check()
