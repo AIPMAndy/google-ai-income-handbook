@@ -42,7 +42,7 @@ function calc(){
   $('#capacity').textContent=Number.isFinite(capacity)?capacity+' 单':'请补齐输入';
   $('#capacity-message').textContent=!complete?'请填写全部假设。未知数字请留空，不会被当成 0。':ticket<=0||hpo<=0?'每单实收和工时必须大于 0。':need<=capacity?'按假设产能可以覆盖收款目标，但没有保证获得订单。':'按假设工时，当前产能不足；先验证定价、交付方式和真实获客。';
 }
-const calcInputs=$('.calc-fields input');
+const calcInputs=Array.from(document.querySelectorAll('.calc-fields input'));
 calcInputs.forEach(e=>e.addEventListener('input',()=>{calc();$('#calc-mode').textContent='自定义输入 · 请确保每项数字可核验；未知成本留空，不当作 0。'}));
 $('#clear-example').addEventListener('click',()=>{
   if(userEdited&&!window.confirm('将清空本页已经填写的所有数字。确认吗？清空后可立即撤销。'))return;
