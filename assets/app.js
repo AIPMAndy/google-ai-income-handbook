@@ -15,9 +15,49 @@ let current=0;const chapterList=$('#chapter-list');const reader=$('#chapter-arti
 function openChapter(i){current=Math.max(0,Math.min(i,d.chapters.length-1));const c=d.chapters[current];reader.innerHTML=`<div class="chapter-breadcrumb">CHAPTER ${esc(c.id)} · ${esc(c.phase)}</div><h3>${esc(c.title)}</h3><p class="lesson-lead">${esc(c.lead)}</p>${c.tools?`<div class="lesson-extra"><b>需要的工具：</b>${esc(c.tools)}</div>`:''}<h4>照着做 · ${c.steps.length} 个步骤</h4><ol class="lesson-steps">${c.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol><div class="lesson-output"><b>完成后应得到：</b>${esc(c.output)}</div><div class="lesson-risk"><b>风险红线：</b>${esc(c.redline)}</div>${c.example?`<div class="lesson-extra"><b>明确标记为虚构的示范：</b>${esc(c.example)}</div>`:''}${c.check?`<div class="lesson-extra"><b>验收：</b>${esc(c.check)}</div>`:''}<div class="chapter-nav"><button id="prev-ch" ${current===0?'disabled':''}>← 上一章</button><button id="next-ch" ${current===d.chapters.length-1?'disabled':''}>下一章 →</button></div>`;$('#prev-ch').addEventListener('click',()=>openChapter(current-1));$('#next-ch').addEventListener('click',()=>openChapter(current+1));showChapterList($('#chapter-search').value);}
 $('#chapter-search').addEventListener('input',e=>showChapterList(e.target.value));openChapter(0);
 function showPrompts(){const f=$('#prompt-filter').value;$('#prompt-grid').innerHTML=d.prompts.filter(p=>f==='all'||f===p.category).map(p=>`<article class="prompt-card"><div class="prompt-head"><span class="prompt-cat">${esc(p.category)}</span><small>#${String(p.id).padStart(2,'0')}</small></div><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p><div class="prompt-actions"><button type="button" class="copy-prompt" data-id="${p.id}">复制 Prompt ↗</button><button type="button" class="toggle-prompt">展开全文 ↓</button></div></article>`).join('');$$('.copy-prompt').forEach(b=>b.addEventListener('click',()=>copy(d.prompts.find(x=>x.id===Number(b.dataset.id)).body)));$$('.toggle-prompt').forEach(b=>b.addEventListener('click',()=>{let c=b.closest('.prompt-card');c.classList.toggle('open');b.textContent=c.classList.contains('open')?'收起 ↑':'展开全文 ↓'}))}$('#prompt-filter').addEventListener('change',showPrompts);showPrompts();
-const val=(id)=>{let x=Number($('#'+id).value);return Number.isFinite(x)&&x>=0?x:NaN};const money=(x)=>Number.isFinite(x)?'¥'+x.toLocaleString('zh-CN',{maximumFractionDigits:2,minimumFractionDigits:0}):'无法计算';
-function calc(){const recv=val('received'),refund=val('refund'),tool=val('tools-cost'),other=val('other-cost'),sales=val('sales-hours'),work=val('work-hours');const v=recv-refund-tool-other;$('#contribution').textContent=money(v);$('#hourly').textContent=sales+work>0?money(v/(sales+work)):'无法计算';const target=val('target'),ticket=val('ticket'),hpo=val('hours-per-order'),monthly=val('monthly-hours');const need=ticket>0?Math.ceil(target/ticket):NaN;const capacity=hpo>0?Math.floor(monthly/hpo):NaN;$('#need-orders').textContent=Number.isFinite(need)?need+' 单':'无法计算';$('#capacity').textContent=Number.isFinite(capacity)?capacity+' 单':'无法计算';$('#capacity-message').textContent=Number.isFinite(need)&&Number.isFinite(capacity)?need<=capacity?'按假设产能可以覆盖收款目标，但没有保证获得订单。':'按假设工时，当前产能不足；先验证定价、交付方式和真实获客。':'请填写大于 0 的单价和单笔工时，不能用 0 作除数。'};
-$$('.calc-fields input').forEach(e=>e.addEventListener('input',calc));calc();
+const currencyIds=new Set(['received','refund','tools-cost','other-cost','target','ticket']);
+const exampleValues={received:'1500',refund:'0','tools-cost':'60','other-cost':'40','sales-hours':'3','work-hours':'9',target:'100000',ticket:'5000','hours-per-order':'12','monthly-hours':'160'};
+const val=(id)=>{
+  const raw=$('#'+id).value.trim();
+  if(!raw)return NaN; // Unknown is never the same as zero.
+  if(currencyIds.has(id)&&!/^(?:0|[1-9]\\d*)(?:\\.\\d{1,2})?$/.test(raw))return NaN;
+  const x=Number(raw);
+  if(!Number.isFinite(x)||x<0)return NaN;
+  if(currencyIds.has(id)&&!Number.isSafeInteger(Math.round(x*100)))return NaN;
+  return x;
+};
+const money=(x)=>Number.isFinite(x)?'¥'+x.toLocaleString('zh-CN',{maximumFractionDigits:2,minimumFractionDigits:0}):'请补齐输入';
+function calc(){
+  const recv=val('received'),refund=val('refund'),tool=val('tools-cost'),other=val('other-cost'),sales=val('sales-hours'),work=val('work-hours');
+  const ready=[recv,refund,tool,other].every(Number.isFinite);
+  const cents=ready?Math.round(recv*100)-Math.round(refund*100)-Math.round(tool*100)-Math.round(other*100):NaN;
+  const v=Number.isSafeInteger(cents)?cents/100:NaN;
+  $('#contribution').textContent=money(v);
+  $('#hourly').textContent=Number.isFinite(v)&&Number.isFinite(sales)&&Number.isFinite(work)&&sales+work>0?money(v/(sales+work)):'请补齐有效工时';
+  const target=val('target'),ticket=val('ticket'),hpo=val('hours-per-order'),monthly=val('monthly-hours');
+  const complete=[target,ticket,hpo,monthly].every(Number.isFinite);
+  const need=complete&&ticket>0?Math.ceil(Math.round(target*100)/Math.round(ticket*100)):NaN;
+  const capacity=complete&&hpo>0?Math.floor(monthly/hpo):NaN;
+  $('#need-orders').textContent=Number.isFinite(need)?need+' 单':'请补齐输入';
+  $('#capacity').textContent=Number.isFinite(capacity)?capacity+' 单':'请补齐输入';
+  $('#capacity-message').textContent=!complete?'请填写全部假设。未知数字请留空，不会被当成 0。':ticket<=0||hpo<=0?'每单实收和工时必须大于 0。':need<=capacity?'按假设产能可以覆盖收款目标，但没有保证获得订单。':'按假设工时，当前产能不足；先验证定价、交付方式和真实获客。';
+}
+const calcInputs=$('.calc-fields input');
+calcInputs.forEach(e=>e.addEventListener('input',()=>{calc();$('#calc-mode').textContent='自定义输入 · 请确保每项数字可核验；未知成本留空，不当作 0。'}));
+$('#clear-example').addEventListener('click',()=>{
+  calcInputs.forEach(el=>{el.value='';});
+  $('#clear-example').hidden=true;$('#restore-example').hidden=false;
+  $('#calc-mode').textContent='已清空演示值 · 请填写真实数字；未填写不计算。';
+  calc();
+  $('#received').focus({preventScroll:true});
+});
+$('#restore-example').addEventListener('click',()=>{
+  for(const [id,value] of Object.entries(exampleValues))$('#'+id).value=value;
+  $('#restore-example').hidden=true;$('#clear-example').hidden=false;
+  $('#calc-mode').textContent='当前是虚构教学演示值，不是真实订单与经营结果。';
+  calc();toast('已恢复虚构教学示例。');
+});
+calc();
 const storageKey='andy-google-ai-income-v1';let done=new Set();try{const a=JSON.parse(localStorage.getItem(storageKey)||'[]');if(Array.isArray(a))done=new Set(a.filter(n=>Number.isInteger(n)&&n>=1&&n<=30))}catch(_){toast('本地进度读取不可用，仍可使用导出备份')};function persist(){try{localStorage.setItem(storageKey,JSON.stringify([...done].sort((a,b)=>a-b)))}catch(_){toast('本地存储不可用，请导出 JSON 备份')}};
 function showPlan(){const grouped=new Map();d.plan.forEach(x=>{if(!grouped.has(x.phase))grouped.set(x.phase,[]);grouped.get(x.phase).push(x)});$('#plan-grid').innerHTML=d.plan.map(x=>`<label class="day-card"><span class="day-label">DAY ${String(x.day).padStart(2,'0')}</span><input type="checkbox" data-day="${x.day}" aria-label="完成第${x.day}天任务" ${done.has(x.day)?'checked':''}/><div class="day-phase">${esc(x.phase)}</div><div class="day-action">${esc(x.action)}</div><div class="day-proof">证据：${esc(x.proof)}</div></label>`).join('');$$('[data-day]').forEach(el=>el.addEventListener('change',()=>{let n=+el.dataset.day;if(el.checked)done.add(n);else done.delete(n);persist();updateProgress()}));updateProgress()};function updateProgress(){const c=done.size;$('#progress-count').textContent=c+' / 30 天';$('#progress-percent').textContent=Math.round(c/30*100)+'%';$('#progress-bar').style.width=c/30*100+'%'}showPlan();
 $('#export-progress').addEventListener('click',()=>download('google-ai-income-progress.json',JSON.stringify({project:'google-ai-income-handbook',version:1,completed:[...done].sort((a,b)=>a-b),exportedAt:new Date().toISOString()},null,2),'application/json;charset=utf-8'));$('#import-progress').addEventListener('click',()=>$('#progress-file').click());$('#progress-file').addEventListener('change',async(e)=>{const f=e.target.files?.[0];if(!f)return;if(f.size>50000){toast('备份过大，已拒绝');return}try{const v=JSON.parse(await f.text());if(v.project!=='google-ai-income-handbook'||!Array.isArray(v.completed)||v.completed.some(x=>!Number.isInteger(x)||x<1||x>30))throw Error('invalid');done=new Set(v.completed);persist();showPlan();toast('进度恢复成功')}catch(_){toast('JSON 备份格式错误，未修改现有进度')}e.target.value=''});$('#reset-progress').addEventListener('click',()=>{if(window.confirm('确定清空本机 30 天完成记录吗？')){done.clear();persist();showPlan();toast('本机进度已重置')}});
