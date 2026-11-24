@@ -1,0 +1,5 @@
+# Project-path robots.txt is informational; host-level robots.txt is maintained at https://aipmandy.github.io/robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://aipmandy.github.io/google-ai-income-handbook/sitemap.xml
