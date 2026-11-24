@@ -33,3 +33,29 @@ jobs:
           assert (root/'pdf/google-ai-income-handbook.pdf').read_bytes()[:5]==b'%PDF-'
           assert 'one-person-ai-income-guide/google-ai-income' not in (root/'index.html').read_text()
           PYTEST
+
+  browser:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install 'playwright==1.56.0'
+          if command -v google-chrome >/dev/null 2>&1; then
+            echo "PLAYWRIGHT_USE_SYSTEM_CHROME=1" >> "$GITHUB_ENV"
+          else
+            python -m playwright install --with-deps chromium
+          fi
+      - name: Interact with search, calculation, example reset and mobile layout
+        run: python tests/browser_smoke.py
+      - name: Upload browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: google-ai-ux-qa
+          path: tests/screenshot-*.png
+          if-no-files-found: ignore
+          retention-days: 14

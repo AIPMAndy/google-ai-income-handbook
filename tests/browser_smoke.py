@@ -1,9 +1,10 @@
+import os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 URL=(ROOT/'index.html').as_uri()
 with sync_playwright() as p:
- browser=p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox'])
+ browser=p.chromium.launch(headless=True,args=['--no-sandbox'],channel='chrome' if os.getenv('PLAYWRIGHT_USE_SYSTEM_CHROME') else None)
  for width,height in [(390,844),(1280,900)]:
   page=browser.new_page(viewport={'width':width,'height':height},device_scale_factor=1)
   errors=[]
@@ -35,6 +36,22 @@ with sync_playwright() as p:
   page.locator('#prompt-filter').select_option('all')
   page.locator('#received').fill('2000')
   assert '1,900' in page.locator('#contribution').inner_text()
+  page.locator('#refund').fill('')
+  assert '请补齐输入' in page.locator('#contribution').inner_text(), 'blank cost may not be silently zero'
+  page.locator('#refund').fill('0')
+  assert '1,900' in page.locator('#contribution').inner_text()
+  page.locator('#tools-cost').fill('1.234')
+  assert '请补齐输入' in page.locator('#contribution').inner_text(), 'fraction-of-a-cent must not be rounded invisibly'
+  if not page.locator('#restore-example').is_visible():
+   page.once('dialog', lambda dialog: dialog.accept())
+   page.locator('#clear-example').click()
+  if page.locator('#restore-example').is_visible(): page.locator('#restore-example').click()
+  assert '1,400' in page.locator('#contribution').inner_text()
+  page.locator('#clear-example').click()
+  assert page.locator('#received').input_value() == ''
+  assert '请补齐输入' in page.locator('#contribution').inner_text()
+  page.locator('#undo-clear').click()
+  assert '1,400' in page.locator('#contribution').inner_text(), 'undo restores previous values'
   page.locator('#recommend').click()
   assert '建议先验证：' in page.locator('#recommend-result').inner_text()
   page.locator('[data-day="1"]').check()
