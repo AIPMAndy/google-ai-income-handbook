@@ -20,7 +20,7 @@ const exampleValues={received:'1500',refund:'0','tools-cost':'60','other-cost':'
 const val=(id)=>{
   const raw=$('#'+id).value.trim();
   if(!raw)return NaN; // Unknown is never the same as zero.
-  if(currencyIds.has(id)&&!/^(?:0|[1-9]\\d*)(?:\\.\\d{1,2})?$/.test(raw))return NaN;
+  if(currencyIds.has(id)&&!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(raw))return NaN;
   const x=Number(raw);
   if(!Number.isFinite(x)||x<0)return NaN;
   if(currencyIds.has(id)&&!Number.isSafeInteger(Math.round(x*100)))return NaN;
