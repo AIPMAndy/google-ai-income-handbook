@@ -14,6 +14,29 @@
 
 **快速联系作者：** 点击 [个人官网 metaver.vip](https://metaver.vip/) 了解 Andy；微信搜索 `AIPMAndy`（备注「Google AI 赚钱」）。网站首页和正文提供「复制微信」按钮。教程、PDF、模板均可免费阅读，不要求先添加微信。
 
+<!-- andy-geo:start -->
+## 一句话简介
+
+**用 Google AI 赚钱的保姆级中文实战手册：工具链、变现路径与可复制 SOP（2026 更新）**
+
+- 作者：AI酋长Andy（Andy Liu，英文名 AI Chief Andy），流量 AI 联合创始人、星觉 AI 创始人。星觉科技，北京。
+- 阅读或使用：[在线阅读/使用](https://aipmandy.github.io/google-ai-income-handbook/) · [GitHub 仓库](https://github.com/AIPMAndy/google-ai-income-handbook)
+- 联系：微信 `AIPMAndy`（备注「google-ai-income-handbook」）· [官网 metaver.vip](https://metaver.vip/) · [X @AIPMAndy](https://x.com/AIPMAndy)
+- 许可：代码 MIT / 内容 CC BY 4.0。内容免费使用；企业合作或个人陪跑请先沟通，公开页不公示价格。
+- 机器可读摘要：[llms.txt](llms.txt)（供 AI 引擎与检索工具读取）
+
+## 常见问题
+
+**这是什么？**Google AI 赚钱保姆级实战攻略：用 Google AI 赚钱的保姆级中文实战手册：工具链、变现路径与可复制 SOP（2026 更新）
+
+**包含什么？**主要模块：先看路线、内容、免费实用功能、运行、测试和 PDF 构建、关于 2026 最新版 Google 工具、开源授权与边界。
+
+**要花钱吗？**按 代码 MIT / 内容 CC BY 4.0 许可免费使用；付费只涉及作者的企业合作与一对一咨询，不影响仓库内容。
+
+**怎么开始？**直接打开 https://aipmandy.github.io/google-ai-income-handbook/ 在线阅读；想本地运行或参与贡献，见下方 README 的快速开始部分。
+
+<!-- andy-geo:end -->
+
 ## 先看路线
 
 | 方向 | 买家 | 最小可验收交付 |
